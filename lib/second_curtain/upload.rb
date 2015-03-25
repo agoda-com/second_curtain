@@ -1,7 +1,7 @@
-require 'aws-sdk-v1'
 require 'date'
 require 'pathname'
 require 'uri'
+require 'FileUtils'
 
 class Upload
   attr_reader :expected_path
@@ -14,18 +14,17 @@ class Upload
     @actual_path = actual_path
   end
 
-  def upload(bucket, path)
-    abort unless bucket
+  def upload(path)
     abort unless path
 
     expected_filename = Pathname.new(@expected_path).basename.to_s
-    expected_object = bucket.objects[path + "/" + expected_filename]
-    expected_object.write(:file => @expected_path)
-    @uploaded_expected_url = expected_object.public_url
+    expected_object = path + "/" + expected_filename
+    FileUtils.cp(@expected_path, path)
+    @uploaded_expected_url = expected_filename
 
     actual_filename = Pathname.new(@actual_path).basename.to_s
-    actual_object = bucket.objects[path + "/" + actual_filename]
-    actual_object.write(:file => @actual_path)
-    @uploaded_actual_url = actual_object.public_url
+    actual_object = path + "/" + actual_filename
+    FileUtils.cp(@actual_path, path)
+    @uploaded_actual_url = actual_filename
   end
 end

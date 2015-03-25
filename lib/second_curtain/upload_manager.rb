@@ -1,15 +1,10 @@
-require 'aws-sdk-v1'
 require 'second_curtain/upload'
 require 'second_curtain/web_preview'
+require 'FileUtils'
 
 class UploadManager
-  def initialize (bucket, path_prefix)
-    abort "error: Second Curtain must supply an S3 bucket" unless bucket
-    abort "error: Second Curtain must supply a path prefix of at least '/'" unless path_prefix
-
+  def initialize
     @uploads = []
-    @path_prefix = path_prefix
-    @bucket = bucket
   end
 
   def enqueue_upload(expected_path, actual_path)
@@ -19,13 +14,16 @@ class UploadManager
   def upload(folder_name)
     return nil unless @uploads.count > 0
 
+    FileUtils.rm_rf(folder_name) if Dir.exists?(folder_name)
+    FileUtils.makedirs(folder_name)
+
     @uploads.each do |upload|
-      upload.upload(@bucket, @path_prefix)
+      upload.upload(folder_name)
     end
 
     preview = WebPreview.new(@uploads)
-    index_object = @bucket.objects[@path_prefix + folder_name + "/index.html"]
-    index_object.write(preview.generate_html)
-    index_object.public_url.to_s
+    preview_file = folder_name + "/index.html"
+    File.write(preview_file, preview.generate_html)
+    preview_file
   end
 end
