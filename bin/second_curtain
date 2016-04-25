@@ -10,7 +10,7 @@ ARGF.each_line do |line|
 end
 
 if parser.has_failing_commands
-  folder_name = ENV['UPLOAD_IOS_SNAPSHOT_FOLDER_NAME']
+  folder_name = ENV['UPLOAD_IOS_SNAPSHOT_FOLDER_NAME'] || ENV['TRAVIS_JOB_ID'] || ENV['CIRCLE_BUILD_NUM']
 
   if !folder_name
     folder_name = 'second_curtain'
