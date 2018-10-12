@@ -1,6 +1,6 @@
 require 'second_curtain/upload'
 require 'second_curtain/web_preview'
-require 'FileUtils'
+require 'fileutils'
 
 class UploadManager
   def initialize

@@ -1,7 +1,7 @@
 require 'date'
 require 'pathname'
 require 'uri'
-require 'FileUtils'
+require 'fileutils'
 
 class Upload
   attr_reader :expected_path
